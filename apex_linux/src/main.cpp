@@ -723,19 +723,23 @@ int main(void)
 					//luiz
 					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); //glow distance
 					
-					if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
+				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
+					//cinza low life
+					rx_write_float(r5apex, entity + 0x1D0, 176.0f);
+					rx_write_float(r5apex, entity + 0x1D4, 176.0f);
+					rx_write_float(r5apex, entity + 0x1D8, 176.0f);
+
+				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
 					//branco
 					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 
-					
-
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
 					//azul
 					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
+					rx_write_float(r5apex, entity + 0x1D4, 117.0f);
+					rx_write_float(r5apex, entity + 0x1D8, 209.0f);
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 100){
 					//roxo
 					rx_write_float(r5apex, entity + 0x1D0, 126.0f);
@@ -753,7 +757,13 @@ int main(void)
 
 					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); //glow distance
 
-					if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
+				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
+					//cinza low life
+					rx_write_float(r5apex, entity + 0x1D0, 176.0f);
+					rx_write_float(r5apex, entity + 0x1D4, 176.0f);
+					rx_write_float(r5apex, entity + 0x1D8, 176.0f);
+
+				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
 					//branco
 					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 255.0f);
