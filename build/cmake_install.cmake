@@ -1,4 +1,4 @@
-# Install script for directory: /home/luiz/apex_linux
+# Install script for directory: /home/luiz/test/apex_linux
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,8 +44,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/luiz/apex_linux/build/rx/cmake_install.cmake")
-  include("/home/luiz/apex_linux/build/apex_linux/cmake_install.cmake")
+  include("/home/luiz/test/apex_linux/build/rx/cmake_install.cmake")
+  include("/home/luiz/test/apex_linux/build/apex_linux/cmake_install.cmake")
 
 endif()
 
@@ -57,5 +57,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/luiz/apex_linux/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/luiz/test/apex_linux/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

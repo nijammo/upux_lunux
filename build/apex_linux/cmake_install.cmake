@@ -1,4 +1,4 @@
-# Install script for directory: /home/luiz/apex_linux/apex_linux
+# Install script for directory: /home/luiz/test/apex_linux/apex_linux
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

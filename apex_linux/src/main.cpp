@@ -17,8 +17,8 @@
 // keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt 
 #define AIMKEY 107
 
-#define AIMFOV 5.0f
-#define AIMSMOOTH 18.0f
+#define AIMFOV 4.0f
+#define AIMSMOOTH 15.0f
 #define GLOW_ESP 1
 
 std::chrono::milliseconds sleep(10); //aim assist sleep time in miliseconds
@@ -725,9 +725,9 @@ int main(void)
 					
 				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
 					//cinza low life
-					rx_write_float(r5apex, entity + 0x1D0, 176.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 176.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 176.0f);
+					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
+					rx_write_float(r5apex, entity + 0x1D4, 100.0f);
+					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
 
 				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
 					//branco
@@ -759,9 +759,9 @@ int main(void)
 
 				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
 					//cinza low life
-					rx_write_float(r5apex, entity + 0x1D0, 176.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 176.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 176.0f);
+					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
+					rx_write_float(r5apex, entity + 0x1D4, 100.0f);
+					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
 
 				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
 					//branco
