@@ -13,6 +13,7 @@
 #include "math.h"
 #include <chrono>
 #include <thread>
+
 // keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt 
 #define AIMKEY 107
 
@@ -20,9 +21,8 @@
 #define AIMSMOOTH 18.0f
 #define GLOW_ESP 1
 
-std::chrono::milliseconds sleep(10);
-
-
+std::chrono::milliseconds sleep(10); //aim assist sleep time in miliseconds
+float maxdistance = 30.0f; //aim assist maximum range in meters
 
 
 
@@ -481,9 +481,7 @@ int main(void)
 	printf("[+] m_vecAbsOrigin: %x\n", m_vecAbsOrigin);
 	printf("[+] m_iWeapon: %x\n", m_iWeapon);
 	printf("[+] m_iBoneMatrix: %x\n", m_iBoneMatrix);
-	printf("[+] m_playerData: %x\n", m_playerData);
-	printf("[+] RGB Color: R%g G%g B%g\n", r, g, b);
-	
+	printf("[+] m_playerData: %x\n", m_playerData);	
 		
  	
 	fflush(stdout);
