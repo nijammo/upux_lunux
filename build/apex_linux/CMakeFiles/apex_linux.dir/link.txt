@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wall -DNDEBUG -Wno-format-truncation -Wno-strict-aliasing -O2 -s -rdynamic CMakeFiles/apex_linux.dir/src/main.cpp.o -o apex_linux  ../rx/librx.a -Wall -DNDEBUG -pthread -s -O2 
