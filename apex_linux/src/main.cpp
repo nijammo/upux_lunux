@@ -22,7 +22,7 @@
 #define GLOW_ESP 1
 
 std::chrono::milliseconds sleep(10); //aim assist sleep time in miliseconds
-float maxdistance = 30.0f; //aim assist maximum range in meters
+float maxdistance = 50.0f; //aim assist maximum range in meters
 
 
 
@@ -794,7 +794,7 @@ int main(void)
 			rx_read_process(r5apex, target_entity + 0x158, &enmPos, sizeof(vec3)); //offset distance
 			float distance = ((CalcDistance(local_position, enmPos)/100)*2); //need to verify
 			printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
-			bool far = (distance >= 30.0f);
+			bool far = (distance >= maxdistance);
 
 			if(far){
 				printf(" Cancelling ");
