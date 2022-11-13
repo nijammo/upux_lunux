@@ -22,7 +22,7 @@
 #define GLOW_ESP 1
 
 std::chrono::milliseconds sleep(10); //aim assist sleep time in miliseconds
-float maxdistance = 50.0f; //aim assist maximum range in meters
+float maxdistance = 70.0f; //aim assist maximum range in meters
 
 
 
@@ -572,10 +572,12 @@ int main(void)
 			}									
 		}	*/
 		
+
+		//teste spectator
 		for (int i = 0; i < 70; i++)
 		{
 			QWORD entity = GetClientEntity(r5apex, IClientEntityList, i);
-			/*
+			
 			float targetangle = rx_read_float(r5apex, entity + OFFSET_YAW);
       			float targetyaw = -targetangle; // yaw is inverted
       			if (targetyaw < 0)
@@ -622,8 +624,9 @@ int main(void)
        				printf("\r[+] Spectator: 00");
 				fflush(stdout);
 				}
-				*/
-			
+				
+			// fim teste spectator
+
 				
 			int EntTeam = rx_read_i32(r5apex, entity + m_iTeamNum);
 					if (EntTeam % 2) {
@@ -724,29 +727,29 @@ int main(void)
 					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); //glow distance
 					
 				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
-					//cinza low life
+					//green - VERY LOW SHIELD
 					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 100.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
 
 				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
-					//branco
+					//white - 2 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//azul
+					//BLUE - 3 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 117.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 209.0f);
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 100){
-					//roxo
+					//PURPLE - 4 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 126.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//vermelho
+					//RED = 5 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
@@ -758,29 +761,29 @@ int main(void)
 					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); //glow distance
 
 				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
-					//cinza low life
+					//green - VERY LOW SHIELD
 					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 100.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
 
 				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
-					//branco
+					//white - 2 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//azul
+					//BLUE - 3 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 117.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 209.0f);
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 100){
-					//roxo
+					//PURPLE - 4 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 126.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//vermelho
+					//RED = 5 BARS
 					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
@@ -803,21 +806,21 @@ int main(void)
 			rx_read_process(r5apex, localplayer + m_vecAbsOrigin, &local_position, sizeof(vec3));
 			rx_read_process(r5apex, target_entity + 0x158, &enmPos, sizeof(vec3)); //offset distance
 			float distance = ((CalcDistance(local_position, enmPos)/100)*2); //need to verify
-			printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
+			//printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
 			bool far = (distance >= maxdistance);
 
 			if(far){
-				printf(" Cancelling ");
+				//printf(" Cancelling ");
 				continue;
 			}
 
-			printf(" Continue ");
+			//printf(" Continue ");
 
 			vec3 target_angle = {0, 0, 0};
 			float fov = 360.0f;
 			//luiz - alteracao hitbox
 			//int bone_list[] = {2, 3, 5, 8};
-			int bone_list[] = {37, 13, 7, 15, 9}; //chest
+			int bone_list[] = {7, 39, 37, 15}; //chest
 
 			vec3 breath_angles;
 			rx_read_process(r5apex, localplayer + m_iViewAngles - 0x10, &breath_angles, sizeof(vec3));
@@ -926,6 +929,27 @@ int main(void)
 					rx_write_process(r5apex, IInputSystem + 0x1DB0, &data, sizeof(data));
 					std::this_thread::sleep_for(sleep);
 				}
+			}
+		}
+
+
+
+		for (int k = 0; k < 10000; k++)
+		{	
+			QWORD entity = GetClientEntity(r5apex, IClientEntityList, k);
+			itemID = rx_read_int(r5apex, entity + 0x1648);		
+			switch (itemID){
+				case 27: //VK-47 Flatline
+				case 77: //R-301 Carbine
+				case 171: //Shield (Level 3 / Purple)
+				case 175: //Evo Shield (Level 3 / Purple)
+				case 170: //Helmet (Level 4 / Gold)
+				case 184: //Backpack (Level 3 / Purple)
+				case 185:  //Backpack (Level 4 / Gold)
+				case 166: //Head Level 3 / Purple
+				case 167: //Head Level 4 / Gold
+			rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
+			//break;
 			}
 		}
 
