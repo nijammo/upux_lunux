@@ -2,7 +2,6 @@
  * tested on ubuntu 22.04.1 LTS
  */
 
-
 #include "../../rx/rx.h"
 #include <stdio.h>
 #include <string.h>
@@ -14,31 +13,18 @@
 #include <chrono>
 #include <thread>
 
-// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt 
+// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
 #define AIMKEY 107
 
 #define AIMFOV 4.0f
-#define AIMSMOOTH 15.0f
+#define AIMSMOOTH 10.0f
 #define GLOW_ESP 1
+#define ITEM_ESP 1
 
-std::chrono::milliseconds sleep(10); //aim assist sleep time in miliseconds
-float maxdistance = 70.0f; //aim assist maximum range in meters
+std::chrono::milliseconds sleep(10); // aim assist sleep time in miliseconds
+float maxdistance = 70.0f;			 // aim assist maximum range in meters
 
-
-
-
-#define Item_Enable_key 103 //103 = caplock
-
-//lobby: 1987212659
-
-float r = 242.0f;
-float g = 31.0f;
-float b = 31.0f;
-
-float item_r = 255.0f;
-float item_g = 255.0f;
-float item_b = 255.0f;
-
+int itemWorkaround = 0;
 
 int GetApexProcessId(void)
 {
@@ -238,7 +224,7 @@ int main(void)
 	// get base address
 	// in case this function doesn't work, use QWORD base_module = 0x140000000;
 	//
-	
+
 	QWORD base_module = 0x140000000;
 	if (base_module == 0)
 	{
@@ -246,16 +232,12 @@ int main(void)
 		printf("[+] r5apex.exe base [0x%lx]\n", base_module);
 	}
 
-	
-
 	printf("[+] r5apex.exe base [0x%lx]\n", base_module);
-	
 
 	DWORD dwBulletSpeed = 0, dwBulletGravity = 0, dwMuzzle = 0, dwVisibleTime = 0;
 
 	QWORD base_module_dump = rx_dump_module(r5apex, base_module);
-		
- 		
+
 	if (base_module_dump == 0)
 	{
 		printf("[-] failed to dump r5apex.exe\n");
@@ -290,7 +272,7 @@ int main(void)
 			dwLocalPlayer = ResolveRelativeAddressEx(r5apex, dwLocalPlayer, 3, 7);
 		}
 	}
-	
+
 	QWORD IInputSystem = 0;
 	{
 		// 48 8B 05 ? ? ? ? 48 8D 4C  24 20 BA 01 00 00 00 C7
@@ -313,9 +295,7 @@ int main(void)
 	}
 
 	QWORD sensitivity = 0;
-		sensitivity = base_module + 0x01eaafd0;
-
-	
+	sensitivity = base_module + 0x01eabf30;
 
 	{
 
@@ -357,7 +337,7 @@ int main(void)
 		{
 			vis_time = vis_time + 0x10;
 			dwVisibleTime = rx_read_i32(r5apex, vis_time + 0x4);
-			//dwVisibleTime = 0x1a48;
+			// dwVisibleTime = 0x1a48;
 		}
 	}
 
@@ -369,10 +349,8 @@ int main(void)
 		QWORD recv_table = rx_read_i64(r5apex, GetAllClasses + 0x18);
 		QWORD recv_name = rx_read_i64(r5apex, recv_table + 0x4C8);
 
-
 		char name[260];
 		rx_read_process(r5apex, recv_name, name, 260);
-
 
 		if (!strcmp(name, "DT_Player"))
 		{
@@ -402,12 +380,10 @@ int main(void)
 		if (!strcmp(name, "DT_WeaponX"))
 		{
 			m_playerData = dump_table(r5apex, recv_table, "m_playerData");
-		}		
+		}
 
 		GetAllClasses = rx_read_i64(r5apex, GetAllClasses + 0x20);
 	}
-	
-
 
 	DWORD previous_tick = 0;
 	float lastvis_aim[70];
@@ -461,9 +437,8 @@ int main(void)
 		goto ON_EXIT;
 	}
 
-	
 	dwMuzzle = dwMuzzle - 0x04;
-	
+
 	printf("[+] IClientEntityList: %lx\n", IClientEntityList - base_module);
 	printf("[+] dwLocalPlayer: %lx\n", dwLocalPlayer - base_module);
 	printf("[+] IInputSystem: %lx\n", IInputSystem - base_module);
@@ -481,25 +456,26 @@ int main(void)
 	printf("[+] m_vecAbsOrigin: %x\n", m_vecAbsOrigin);
 	printf("[+] m_iWeapon: %x\n", m_iWeapon);
 	printf("[+] m_iBoneMatrix: %x\n", m_iBoneMatrix);
-	printf("[+] m_playerData: %x\n", m_playerData);	
-		
- 	
+	printf("[+] m_playerData: %x\n", m_playerData);
+
 	fflush(stdout);
-	
-	//printf("[+] GameMode: %d", mode);
+
+	// printf("[+] GameMode: %d", mode);
 
 	while (1)
 	{
+		itemWorkaround++;
+		//printf("TESTEEEE -- %i",itemWorkaround);
+		
 		if (!rx_process_exists(r5apex))
 		{
 			break;
 		}
-		
-	uint64_t gameModePtr = rx_read_i32(r5apex, base_module + 0x01e87f30 + 0x58);
- 	int gameMode = rx_read_int(r5apex, gameModePtr);
- 	//printf("\r[+] Game Mode Int: %d", gameMode);
-	//fflush(stdout);
-	
+
+		uint64_t gameModePtr = rx_read_i32(r5apex, base_module + 0x01e87f30 + 0x58);
+		int gameMode = rx_read_int(r5apex, gameModePtr);
+		// printf("\r[+] Game Mode Int: %d", gameMode);
+		// fflush(stdout);
 
 		QWORD localplayer = rx_read_i64(r5apex, dwLocalPlayer);
 
@@ -527,128 +503,37 @@ int main(void)
 
 		vec3 local_position;
 		rx_read_process(r5apex, localplayer + m_vecAbsOrigin, &local_position, sizeof(vec3));
-		
-		/*
-		for (int k = 0; k < 10000; k++)
-		{	
-			QWORD entity = GetClientEntity(r5apex, IClientEntityList, k);
-			itemID = rx_read_int(r5apex, entity + 0x1628);
-			//printf("[+] m_customScriptInt: %x\n", itemID);
-			switch (itemID){
-				case 27: //VK-47 Flatline
-				case 77: //R-301 Carbine
-				case 171: //Shield (Level 3 / Purple)
-				case 175: //Evo Shield (Level 3 / Purple)
-				case 170: //Helmet (Level 4 / Gold)
-				case 184:	//Backpack (Level 3 / Purple)
-				case 185:  //Backpack (Level 4 / Gold)
-				case 166: //Head Level 3 / Purple
-				case 167: //Head Level 4 / Gold
-			rx_write_i32(r5apex, entity + 0x2C4, 1512990053);			
-			rx_write_i32(r5apex, entity + 0x3c8, 1);
-			rx_write_i32(r5apex, entity + 0x3d0, 2);
-			
-			rx_write_float(r5apex, entity + 0x1D0, item_r);
-			rx_write_float(r5apex, entity + 0x1D4, item_g);
-			rx_write_float(r5apex, entity + 0x1D8, item_b);
-			break;
-			}
-		} */
-		/*for (int k = 0; k < 10000; k++)
-		{	
-			QWORD entity = GetClientEntity(r5apex, IClientEntityList, k);							
-			if(IsButtonDown(r5apex, IInputSystem, 111))					
-			{
-			rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
-			rx_write_i32(r5apex, entity + 0x262, 16256);
-			rx_write_i32(r5apex, entity + 0x2dc, 1193322764);
-			}			
-			}
-			if(IsButtonDown(r5apex, IInputSystem, 110))
-			{
-			rx_write_i32(r5apex, entity + 0x02c0, 1411417991);
-			rx_write_i32(r5apex, entity + 0x262, 0);
-			rx_write_i32(r5apex, entity + 0x2dc, 0);			
-			}									
-		}	*/
-		
 
-		//teste spectator
+		// teste spectator
 		for (int i = 0; i < 70; i++)
 		{
 			QWORD entity = GetClientEntity(r5apex, IClientEntityList, i);
-			
-			float targetangle = rx_read_float(r5apex, entity + OFFSET_YAW);
-      			float targetyaw = -targetangle; // yaw is inverted
-      			if (targetyaw < 0)
-           			 {
-           			 targetyaw += 360;
-           			 }
-           		else
-       				 {
-       				 targetyaw += 90; // yaw is off by 90
-       				 }
-     			if (targetyaw > 360)
-            			{
-            			targetyaw -= 360;
-            			}
-      			float localangle = rx_read_float(r5apex, localplayer + OFFSET_YAW); 
-      			float localyaw = -localangle; // yaw is inverted
-       			if (localyaw < 0)
-            			{
-            			localyaw += 360;
-            			}
-        		else
-        			{
-        			localyaw += 90; // yaw is off by 90
-        			}
-        		if (localyaw > 360)
-            			{
-            			localyaw -= 360; 
-            			}
-       			if (targetyaw == localyaw && rx_read_i32(r5apex, entity + m_iHealth)  == 0)
-           			{
-           			spectatorcount++;
-           			}
-           		else		
-       				{
-       				spectatorcount = 0;
-       				}
-       			if (	spectatorcount > 0 && rx_read_int(r5apex, localplayer + m_iHealth) > 0)
-       				{
-       				printf("\r[+] Spectator: %d", spectatorcount);
-				fflush(stdout);
-				}
-			else
-				{
-       				printf("\r[+] Spectator: 00");
-				fflush(stdout);
-				}
-				
-			// fim teste spectator
 
-				
 			int EntTeam = rx_read_i32(r5apex, entity + m_iTeamNum);
-					if (EntTeam % 2) {
-						iTeamControl = 1;
-						}
-					else {
-						iTeamControl = 2;
-						}
+			if (EntTeam % 2)
+			{
+				iTeamControl = 1;
+			}
+			else
+			{
+				iTeamControl = 2;
+			}
 			int LocTeam = rx_read_i32(r5apex, localplayer + m_iTeamNum);
-					if (LocTeam % 2) {
-						iLocControl = 1;
-						}
-					else {
-						iLocControl = 2;
-						}
-						
-			
-			if (gameMode==1953394531){
+			if (LocTeam % 2)
+			{
+				iLocControl = 1;
+			}
+			else
+			{
+				iLocControl = 2;
+			}
+
+			if (gameMode == 1953394531)
+			{
 				if (iTeamControl == iLocControl)
-				continue;
-				}
-						
+					continue;
+			}
+
 			if (entity == 0)
 				continue;
 
@@ -660,20 +545,20 @@ int main(void)
 				lastvis_aim[i] = 0;
 				continue;
 			}
-			
-		/*	if (rx_read_i32(r5apex, entity + m_iName) != 125780153691248)
-			{
-				continue;
-			} */
+
+			/*	if (rx_read_i32(r5apex, entity + m_iName) != 125780153691248)
+				{
+					continue;
+				} */
 
 			if (rx_read_i32(r5apex, entity + m_iTeamNum) == local_team)
 			{
 				continue;
 			}
-			
-			//if (rx_read_i32(r5apex, entity + m_bleedoutState) == 0)
+
+			// if (rx_read_i32(r5apex, entity + m_bleedoutState) == 0)
 			//{
-				//continue;
+			// continue;
 			//}
 
 			if (rx_read_i32(r5apex, entity + m_lifeState) != 0)
@@ -681,13 +566,11 @@ int main(void)
 				lastvis_aim[i] = 0;
 				continue;
 			}
-						
-      
+
 			vec3 head = GetBonePosition(r5apex, entity, 2);
 
 			vec3 velocity;
 			rx_read_process(r5apex, entity + m_vecAbsOrigin - 0xC, &velocity, sizeof(vec3));
-			
 
 			float fl_time = vec_distance(head, muzzle) / bulletSpeed;
 			head.z += (700.0f * bulletGravity * 0.5f) * (fl_time * fl_time);
@@ -706,88 +589,107 @@ int main(void)
 			rx_read_process(r5apex, localplayer + m_iViewAngles - 0x10, &breath_angles, sizeof(vec3));
 
 			float last_visible = rx_read_float(r5apex, entity + dwVisibleTime);
-			//glow enable
+			// glow enable
 			rx_write_i32(r5apex, entity + 0x2C4, 1512990053);
 			rx_write_i32(r5apex, entity + 0x3c8, 1);
 			rx_write_i32(r5apex, entity + 0x3d0, 2);
-			
+
 			if (last_visible != 0.00f)
 			{
-		
+
 				float fov = get_fov(breath_angles, target_angle);
-	
-				if (fov < target_fov && last_visible > lastvis_aim[i]) //i think this if is not working, always false
+
+				//set default glow color - white
+				rx_write_float(r5apex, entity + 0x1D0, 255.0f);
+				rx_write_float(r5apex, entity + 0x1D4, 255.0f);
+				rx_write_float(r5apex, entity + 0x1D8, 255.0f);
+
+				if (fov < target_fov && last_visible > lastvis_aim[i]) // i think this if is not working, always false
 				{
 
 					target_fov = fov;
 					target_entity = entity;
 					lastvis_aim[i] = last_visible;
 
-					//luiz
-					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); //glow distance
-					
-				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
-					//green - VERY LOW SHIELD
-					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 100.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
+					// luiz
+					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); // glow distance
 
-				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
-					//white - 2 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 255.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
-
-				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//BLUE - 3 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 117.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 209.0f);
-				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 100){
-					//PURPLE - 4 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 126.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
-				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//RED = 5 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
-				}
+					if (rx_read_i32(r5apex, entity + 0x0170) <= 10)
+					{
+						// green - VERY LOW SHIELD
+						rx_write_float(r5apex, entity + 0x1D0, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 100.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 0.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 50)
+					{
+						// white - 2 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 255.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 255.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 75)
+					{
+						// BLUE - 3 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 117.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 209.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 100)
+					{
+						// PURPLE - 4 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 126.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 255.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 75)
+					{
+						// RED = 5 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 0.0f);
+					}
 				}
 				else
 				{
 
-					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); //glow distance
+					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); // glow distance
 
-				if (rx_read_i32(r5apex, entity + 0x0170) <= 10){
-					//green - VERY LOW SHIELD
-					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 100.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
-
-				}else if (rx_read_i32(r5apex, entity + 0x0170) <= 50){
-					//white - 2 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 255.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
-
-				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//BLUE - 3 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 117.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 209.0f);
-				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 100){
-					//PURPLE - 4 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 126.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 255.0f);
-				}else if(rx_read_i32(r5apex, entity + 0x0170) <= 75){
-					//RED = 5 BARS
-					rx_write_float(r5apex, entity + 0x1D0, 255.0f);
-					rx_write_float(r5apex, entity + 0x1D4, 0.0f);
-					rx_write_float(r5apex, entity + 0x1D8, 0.0f);
-				}
+					if (rx_read_i32(r5apex, entity + 0x0170) <= 10)
+					{
+						// green - VERY LOW SHIELD
+						rx_write_float(r5apex, entity + 0x1D0, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 100.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 0.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 50)
+					{
+						// white - 2 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 255.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 255.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 75)
+					{
+						// BLUE - 3 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 117.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 209.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 100)
+					{
+						// PURPLE - 4 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 126.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 255.0f);
+					}
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 75)
+					{
+						// RED = 5 BARS
+						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
+						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
+						rx_write_float(r5apex, entity + 0x1D8, 0.0f);
+					}
 				}
 			}
 		}
@@ -797,19 +699,20 @@ int main(void)
 
 			if (rx_read_i32(r5apex, target_entity + m_iHealth) == 0)
 				continue;
-			if (rx_read_i32(r5apex, target_entity + m_bleedoutState) > 0) //ignore knock
+			if (rx_read_i32(r5apex, target_entity + m_bleedoutState) > 0) // ignore knock
 				continue;
 
-			//luiz - distancia
+			// luiz - distancia
 			vec3 enmPos;
-			
+
 			rx_read_process(r5apex, localplayer + m_vecAbsOrigin, &local_position, sizeof(vec3));
-			rx_read_process(r5apex, target_entity + 0x158, &enmPos, sizeof(vec3)); //offset distance
-			float distance = ((CalcDistance(local_position, enmPos)/100)*2); //need to verify
-			//printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
+			rx_read_process(r5apex, target_entity + 0x158, &enmPos, sizeof(vec3)); // offset distance
+			float distance = ((CalcDistance(local_position, enmPos) / 100) * 2);   // need to verify
+			// printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
 			bool far = (distance >= maxdistance);
 
-			if(far){
+			if (far)
+			{
 				//printf(" Cancelling ");
 				continue;
 			}
@@ -818,9 +721,9 @@ int main(void)
 
 			vec3 target_angle = {0, 0, 0};
 			float fov = 360.0f;
-			//luiz - alteracao hitbox
-			//int bone_list[] = {2, 3, 5, 8};
-			int bone_list[] = {7, 39, 37, 15}; //chest
+			// luiz - alteracao hitbox
+			// int bone_list[] = {2, 3, 5, 8};
+			int bone_list[] = {7, 39, 37, 15}; // chest
 
 			vec3 breath_angles;
 			rx_read_process(r5apex, localplayer + m_iViewAngles - 0x10, &breath_angles, sizeof(vec3));
@@ -831,9 +734,6 @@ int main(void)
 
 				vec3 velocity;
 				rx_read_process(r5apex, target_entity + m_vecAbsOrigin - 0xC, &velocity, sizeof(vec3));
-
-				
-
 
 				float fl_time = vec_distance(head, muzzle) / bulletSpeed;
 
@@ -932,33 +832,38 @@ int main(void)
 			}
 		}
 
-
-
-		for (int k = 0; k < 10000; k++)
-		{	
-			QWORD entity = GetClientEntity(r5apex, IClientEntityList, k);
-			itemID = rx_read_int(r5apex, entity + 0x1648);		
-			switch (itemID){
-				case 27: //VK-47 Flatline
-				case 77: //R-301 Carbine
-				case 171: //Shield (Level 3 / Purple)
-				case 175: //Evo Shield (Level 3 / Purple)
-				case 170: //Helmet (Level 4 / Gold)
-				case 184: //Backpack (Level 3 / Purple)
-				case 185:  //Backpack (Level 4 / Gold)
-				case 166: //Head Level 3 / Purple
-				case 167: //Head Level 4 / Gold
-			rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
-			//break;
-			}
+		if(itemWorkaround > 5001){
+			itemWorkaround = 0;
 		}
 
 		
-	}
 
-	
+		//item glow
+		if (itemWorkaround == 5000 && ITEM_ESP == 1)
+		//printf("GLOW -- %i",itemWorkaround);
+		{
+			for (int k = 0; k < 10000; k++)
+			{
+				QWORD entity = GetClientEntity(r5apex, IClientEntityList, k);
+				itemID = rx_read_int(r5apex, entity + 0x1648);
+				switch (itemID)
+				{
+				case 27:  // VK-47 Flatline
+				case 77:  // R-301 Carbine
+				case 171: // Shield (Level 3 / Purple)
+				case 175: // Evo Shield (Level 3 / Purple)
+				case 170: // Helmet (Level 4 / Gold)
+				case 184: // Backpack (Level 3 / Purple)
+				case 185: // Backpack (Level 4 / Gold)
+				case 166: // Head Level 3 / Purple
+				case 167: // Head Level 4 / Gold
+					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
+					break;
+				}
+			}
+		}
+	}
 
 ON_EXIT:
 	rx_close_handle(r5apex);
 }
-
