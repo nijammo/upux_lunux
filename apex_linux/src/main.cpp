@@ -16,12 +16,12 @@
 // keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
 #define AIMKEY 107
 
-#define AIMFOV 4.0f
-#define AIMSMOOTH 10.0f
+#define AIMFOV 2.5f
+#define AIMSMOOTH 15.0f
 #define GLOW_ESP 1
 #define ITEM_ESP 1
 
-std::chrono::milliseconds sleep(10); // aim assist sleep time in miliseconds
+std::chrono::milliseconds sleep(15); // aim assist sleep time in miliseconds
 float maxdistance = 70.0f;			 // aim assist maximum range in meters
 
 int itemWorkaround = 0;
