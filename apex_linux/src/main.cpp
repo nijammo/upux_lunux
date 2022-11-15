@@ -857,6 +857,7 @@ int main(void)
 				case 185: // Backpack (Level 4 / Gold)
 				case 166: // Head Level 3 / Purple
 				case 167: // Head Level 4 / Gold
+				case 162: // shield battery
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
 				}
