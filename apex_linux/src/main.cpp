@@ -723,7 +723,7 @@ int main(void)
 			float fov = 360.0f;
 			// luiz - alteracao hitbox
 			// int bone_list[] = {2, 3, 5, 8};
-			int bone_list[] = {7, 39, 37, 15}; // chest
+			int bone_list[] = {7, 7, 7, 7}; // chest
 
 			vec3 breath_angles;
 			rx_read_process(r5apex, localplayer + m_iViewAngles - 0x10, &breath_angles, sizeof(vec3));
