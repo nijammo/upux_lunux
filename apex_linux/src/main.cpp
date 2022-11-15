@@ -21,7 +21,7 @@
 #define GLOW_ESP 1
 #define ITEM_ESP 1
 
-std::chrono::milliseconds sleep(15); // aim assist sleep time in miliseconds
+std::chrono::milliseconds sleep(25); // aim assist sleep time in miliseconds
 float maxdistance = 50.0f;			 // aim assist maximum range in meters
 
 int itemWorkaround = 0;
@@ -858,6 +858,11 @@ int main(void)
 				case 166: // Head Level 3 / Purple
 				case 167: // Head Level 4 / Gold
 				case 162: // shield battery
+				case 209: //light mag level 3
+				case 210: //light mag level 4
+				case 213: //heavy mag level 3
+				case 214: //heavy mag level 4
+				case 183: //backpack level 2
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
 				}
