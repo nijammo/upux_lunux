@@ -16,12 +16,12 @@
 // keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
 #define AIMKEY 107
 
-#define AIMFOV 2.5f
-#define AIMSMOOTH 15.0f
+#define AIMFOV 3.0f
+#define AIMSMOOTH 13.0f
 #define GLOW_ESP 1
 #define ITEM_ESP 1
 
-std::chrono::milliseconds sleep(15); // aim assist sleep time in miliseconds
+std::chrono::milliseconds sleep(13); // aim assist sleep time in miliseconds
 float maxdistance = 60.0f;			 // aim assist maximum range in meters
 
 int itemWorkaround = 0;
@@ -642,7 +642,7 @@ int main(void)
 						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 						rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 					}
-					else if (rx_read_i32(r5apex, entity + 0x0170) <= 75)
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 125)
 					{
 						// RED = 5 BARS
 						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
@@ -683,7 +683,7 @@ int main(void)
 						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 						rx_write_float(r5apex, entity + 0x1D8, 255.0f);
 					}
-					else if (rx_read_i32(r5apex, entity + 0x0170) <= 75)
+					else if (rx_read_i32(r5apex, entity + 0x0170) <= 125)
 					{
 						// RED = 5 BARS
 						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
