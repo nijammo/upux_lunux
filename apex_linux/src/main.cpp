@@ -21,7 +21,7 @@
 #define GLOW_ESP 1
 #define ITEM_ESP 1
 
-std::chrono::milliseconds sleep(13); // aim assist sleep time in miliseconds
+std::chrono::milliseconds sleep(15); // aim assist sleep time in miliseconds
 float maxdistance = 60.0f;			 // aim assist maximum range in meters
 
 int itemWorkaround = 0;
@@ -580,7 +580,7 @@ int main(void)
 			velocity.z = velocity.z * fl_time;
 
 			head.x += velocity.x;
-			head.y += velocity.y;
+			head.y += velocity.y -20;
 			head.z += velocity.z;
 
 			vec3 target_angle = CalcAngle(muzzle, head);
