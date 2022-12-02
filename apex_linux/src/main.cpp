@@ -16,13 +16,14 @@
 // keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
 #define AIMKEY 107
 
-#define AIMFOV 3.0f
-#define AIMSMOOTH 13.0f
+#define AIMFOV 2.0f
+#define AIMSMOOTH 15.0f
 #define GLOW_ESP 1
 #define ITEM_ESP 1
+#define AIMBOT_ENABLED 1
 
-std::chrono::milliseconds sleep(15); // aim assist sleep time in miliseconds
-float maxdistance = 60.0f;			 // aim assist maximum range in meters
+std::chrono::milliseconds sleep(20); // aim assist sleep time in miliseconds
+float maxdistance = 50.0f;			 // aim assist maximum range in meters
 
 int itemWorkaround = 0;
 
@@ -568,6 +569,7 @@ int main(void)
 			}
 
 			vec3 head = GetBonePosition(r5apex, entity, 2);
+			
 
 			vec3 velocity;
 			rx_read_process(r5apex, entity + m_vecAbsOrigin - 0xC, &velocity, sizeof(vec3));
@@ -694,7 +696,7 @@ int main(void)
 			}
 		}
 
-		if (target_entity && IsButtonDown(r5apex, IInputSystem, AIMKEY))
+		if (target_entity && IsButtonDown(r5apex, IInputSystem, AIMKEY) && AIMBOT_ENABLED == 1)
 		{
 
 			if (rx_read_i32(r5apex, target_entity + m_iHealth) == 0)
