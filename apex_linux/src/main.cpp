@@ -865,6 +865,8 @@ int main(void)
 				case 213: //heavy mag level 3
 				case 214: //heavy mag level 4
 				case 183: //backpack level 2
+				case 97: //wingman
+				case 235: //skullpiercer
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
 				}
