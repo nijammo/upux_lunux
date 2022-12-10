@@ -582,7 +582,7 @@ int main(void)
 			velocity.z = velocity.z * fl_time;
 
 			head.x += velocity.x;
-			head.y += velocity.y -20;
+			head.y += velocity.y -40;
 			head.z += velocity.z;
 
 			vec3 target_angle = CalcAngle(muzzle, head);
