@@ -296,7 +296,7 @@ int main(void)
 	}
 
 	QWORD sensitivity = 0;
-	sensitivity = base_module + 0x01eabf30;
+	sensitivity = base_module + 0x01eabfd0;
 
 	{
 
