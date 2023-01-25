@@ -1,5 +1,5 @@
 /*
- * tested on ubuntu 22.04.1 LTS
+ * tested on ubuntu 22.04.1 LTS and linux mint 21
  */
 
 #include "../../rx/rx.h"
@@ -13,17 +13,60 @@
 #include <chrono>
 #include <thread>
 
-// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
-#define AIMKEY 107
 
-#define AIMFOV 2.0f
-#define AIMSMOOTH 15.0f
-#define GLOW_ESP 1
-#define ITEM_ESP 1
-#define AIMBOT_ENABLED 1
 
-std::chrono::milliseconds sleep(20); // aim assist sleep time in miliseconds
-float maxdistance = 50.0f;			 // aim assist maximum range in meters
+
+/* ------------------ START CONFIGURATIONS ------------------ */
+
+
+#define AIMKEY 107						// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
+#define AIMFOV 10.0f					// Screen range that aimbot will look for enemies. (10 = agressive, 7 = moderated, 3 = safe)
+#define AIMSMOOTH 8.0f					// Speed that the aim will lock on the enemies.	   (8 = agressive, 15 = moderated, 20 = safe)
+#define ITEM_ESP 1						// Enable or disable ESP item
+#define AIMBOT_ENABLED 1				// Enable or disable aimbot
+std::chrono::milliseconds sleep(10); 	// aim assist sleep time in miliseconds, increasing this value will turn aimbot more `safe`
+float maxdistance = 50.0f;			 	// aim assist maximum range in meters
+
+
+/* ------------------ END CONFIGURATIONS ------------------ */
+
+
+
+
+
+/* ------------------ START OFFSETS ------------------ */
+
+
+
+int m_iHealth = 0x043c; 					//RecvTable.DT_Player.m_iHealth
+int m_iTeamNum = 0x044c; 					//RecvTable.DT_BaseEntity.m_iTeamNum
+int m_iViewAngles = 0x25a4 - 0x14; 			//m_ammoPoolCapacity - 0x14
+int m_iCameraAngles = 0x1c60 + 0x2EC; 		//m_zoomFullStartTime + 0x2EC
+int m_bZooming = 0x1c51; 					//m_bZooming
+int m_iBoneMatrix = 0x0e98 + 0x50 - 0x8; 	//m_nForceBone + 0x50 - 0x8
+int m_iWeapon = 0x1a14; 					//m_latestPrimaryWeapons
+int m_vecAbsOrigin = 0x014c; 				//DataMap.CBaseViewModel.m_vecAbsOrigin
+int m_playerData = 0x16b8; 					//RecvTable.DT_WeaponX.m_playerData
+int m_lifeState = 0x0798; 					//RecvTable.DT_Player.m_lifeState
+int m_itemId = 0x1648; 						//RecvTable.DT_PropSurvival.m_customScriptInt
+int m_gameMode = 0x01f16710; 				//mp_gamemode
+int m_localplayer = 0x01edd7e0 + 0x8;
+int m_sensitivity = 0x01eca0e0; 			//mouse_sensitivity
+int m_bulletSpeed = 0x1ef0; 				//CWeaponX!m_flProjectileSpeed
+int m_bulletGravity = m_bulletSpeed + 0x8; 	//CWeaponX!m_flProjectileSpeed + 0x8
+int m_muzzle = 0x1f48; 						//CPlayer!camera_origin
+
+
+
+
+#define in_Attack 0x076687d8
+#define m_bleedoutState 0x2738
+
+
+
+/* ------------------ END OFFSETS OFFSETS ------------------ */
+
+
 
 int itemWorkaround = 0;
 
@@ -116,24 +159,13 @@ typedef struct
 	float z;
 } matrix3x4_t;
 
-int m_iHealth;
-int m_iTeamNum;
-int m_iViewAngles;
-int m_iCameraAngles;
-int m_bZooming;
-int m_iBoneMatrix;
-int m_iWeapon;
-int m_vecAbsOrigin;
-int m_playerData;
-int m_lifeState;
+
+
 int itemID;
 int mode;
 int iTeamControl;
 int iLocControl;
 int spectatorcount = 0;
-#define in_Attack 0x0763f9f0
-#define m_bleedoutState 0x2718
-#define OFFSET_YAW 0x223C
 
 QWORD GetClientEntity(rx_handle game_process, QWORD entity, QWORD index)
 {
@@ -235,7 +267,7 @@ int main(void)
 
 	printf("[+] r5apex.exe base [0x%lx]\n", base_module);
 
-	DWORD dwBulletSpeed = 0, dwBulletGravity = 0, dwMuzzle = 0, dwVisibleTime = 0;
+	DWORD dwVisibleTime = 0;
 
 	QWORD base_module_dump = rx_dump_module(r5apex, base_module);
 
@@ -260,19 +292,6 @@ int main(void)
 		}
 	}
 
-	QWORD dwLocalPlayer = 0;
-	{
-
-		// 89 41 28 48 8B 05 ? ? ? ?
-		char pattern[] = "\x89\x41\x28\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0";
-		char mask[] = "xxxxxx????xxx";
-		dwLocalPlayer = rx_scan_pattern(base_module_dump, pattern, mask, 13);
-		if (dwLocalPlayer)
-		{
-			dwLocalPlayer = dwLocalPlayer + 0x03;
-			dwLocalPlayer = ResolveRelativeAddressEx(r5apex, dwLocalPlayer, 3, 7);
-		}
-	}
 
 	QWORD IInputSystem = 0;
 	{
@@ -296,7 +315,7 @@ int main(void)
 	}
 
 	QWORD sensitivity = 0;
-	sensitivity = base_module + 0x01eabfd0;
+	sensitivity = base_module + m_sensitivity; //mouse_sensitivity
 
 	{
 
@@ -312,22 +331,10 @@ int main(void)
 			QWORD bullet_speed = temp_address - 0x6D;
 			bullet_speed = bullet_speed + 0x04;
 
-			dwBulletSpeed = rx_read_i32(r5apex, bullet_speed);
-			dwBulletGravity = rx_read_i32(r5apex, bullet_gravity);
 		}
 	}
 
-	{
-		char pattern[] = "\xF3\x0F\x10\x91\x00\x00\x00\x00\x48\x8D\x04\x40";
-		char mask[] = "xxxx????xxxx";
-
-		QWORD temp_address = rx_scan_pattern(base_module_dump, pattern, mask, 12);
-		if (temp_address)
-		{
-			temp_address = temp_address + 0x04;
-			dwMuzzle = rx_read_i32(r5apex, temp_address);
-		}
-	}
+	
 
 	{
 		// 48 8B CE  ? ? ? ? ? 84 C0 0F 84 BA 00 00 00
@@ -355,17 +362,17 @@ int main(void)
 
 		if (!strcmp(name, "DT_Player"))
 		{
-			m_iHealth = dump_table(r5apex, recv_table, "m_iHealth");
-			m_iViewAngles = dump_table(r5apex, recv_table, "m_ammoPoolCapacity") - 0x14;
 			m_bZooming = dump_table(r5apex, recv_table, "m_bZooming");
 			m_lifeState = dump_table(r5apex, recv_table, "m_lifeState");
 			m_iCameraAngles = dump_table(r5apex, recv_table, "m_zoomFullStartTime") + 0x2EC;
 		}
 
+		
+
 		if (!strcmp(name, "DT_BaseEntity"))
 		{
 			m_iTeamNum = dump_table(r5apex, recv_table, "m_iTeamNum");
-			m_vecAbsOrigin = 0x014c;
+			
 		}
 
 		if (!strcmp(name, "DT_BaseCombatCharacter"))
@@ -386,6 +393,7 @@ int main(void)
 		GetAllClasses = rx_read_i64(r5apex, GetAllClasses + 0x20);
 	}
 
+
 	DWORD previous_tick = 0;
 	float lastvis_aim[70];
 	memset(lastvis_aim, 0, sizeof(lastvis_aim));
@@ -393,12 +401,6 @@ int main(void)
 	if (IClientEntityList == 0)
 	{
 		printf("[-] IClientEntityList not found\n");
-		goto ON_EXIT;
-	}
-
-	if (dwLocalPlayer == 0)
-	{
-		printf("[-] dwLocalPlayer not found\n");
 		goto ON_EXIT;
 	}
 
@@ -414,23 +416,8 @@ int main(void)
 		goto ON_EXIT;
 	}
 
-	if (dwBulletSpeed == 0)
-	{
-		printf("[-] dwBulletSpeed not found\n");
-		goto ON_EXIT;
-	}
 
-	if (dwBulletGravity == 0)
-	{
-		printf("[-] dwBulletGravity not found\n");
-		goto ON_EXIT;
-	}
 
-	if (dwMuzzle == 0)
-	{
-		printf("[-] dwMuzzle not found\n");
-		goto ON_EXIT;
-	}
 
 	if (dwVisibleTime == 0)
 	{
@@ -438,17 +425,11 @@ int main(void)
 		goto ON_EXIT;
 	}
 
-	dwMuzzle = dwMuzzle - 0x04;
 
 	printf("[+] IClientEntityList: %lx\n", IClientEntityList - base_module);
-	printf("[+] dwLocalPlayer: %lx\n", dwLocalPlayer - base_module);
 	printf("[+] IInputSystem: %lx\n", IInputSystem - base_module);
 	printf("[+] sensitivity: %lx\n", sensitivity - base_module);
-	printf("[+] dwBulletSpeed: %x\n", dwBulletSpeed);
-	printf("[+] dwBulletGravity: %x\n", dwBulletGravity);
-	printf("[+] dwMuzzle: %x\n", dwMuzzle);
 	printf("[+] dwVisibleTime: %x\n", dwVisibleTime);
-	printf("[+] m_iHealth: %x\n", m_iHealth);
 	printf("[+] m_iViewAngles: %x\n", m_iViewAngles);
 	printf("[+] m_bZooming: %x\n", m_bZooming);
 	printf("[+] m_iCameraAngles: %x\n", m_iCameraAngles);
@@ -478,7 +459,7 @@ int main(void)
 		// printf("\r[+] Game Mode Int: %d", gameMode);
 		// fflush(stdout);
 
-		QWORD localplayer = rx_read_i64(r5apex, dwLocalPlayer);
+		QWORD localplayer = rx_read_i64(r5apex, base_module + m_localplayer);
 
 		if (localplayer == 0)
 		{
@@ -487,17 +468,19 @@ int main(void)
 			continue;
 		}
 
+		
+
 		DWORD local_team = rx_read_i32(r5apex, localplayer + m_iTeamNum);
 
 		float fl_sensitivity = rx_read_float(r5apex, sensitivity + 0x68);
 		DWORD weapon_id = rx_read_i32(r5apex, localplayer + m_iWeapon) & 0xFFFF;
 		QWORD weapon = GetClientEntity(r5apex, IClientEntityList, weapon_id - 1);
 
-		float bulletSpeed = rx_read_float(r5apex, weapon + dwBulletSpeed);
-		float bulletGravity = rx_read_float(r5apex, weapon + dwBulletGravity);
+		float bulletSpeed = rx_read_float(r5apex, weapon + m_bulletSpeed);
+		float bulletGravity = rx_read_float(r5apex, weapon + m_bulletGravity);
 
 		vec3 muzzle;
-		rx_read_process(r5apex, localplayer + dwMuzzle, &muzzle, sizeof(vec3));
+		rx_read_process(r5apex, localplayer + m_muzzle, &muzzle, sizeof(vec3)); //CPlayer!camera_origin
 
 		float target_fov = 360.0f;
 		QWORD target_entity = 0;
@@ -505,7 +488,8 @@ int main(void)
 		vec3 local_position;
 		rx_read_process(r5apex, localplayer + m_vecAbsOrigin, &local_position, sizeof(vec3));
 
-		// teste spectator
+
+
 		for (int i = 0; i < 70; i++)
 		{
 			QWORD entity = GetClientEntity(r5apex, IClientEntityList, i);
@@ -540,6 +524,7 @@ int main(void)
 
 			if (entity == localplayer)
 				continue;
+			
 
 			if (rx_read_i32(r5apex, entity + m_iHealth) == 0)
 			{
@@ -699,18 +684,28 @@ int main(void)
 		if (target_entity && IsButtonDown(r5apex, IInputSystem, AIMKEY) && AIMBOT_ENABLED == 1)
 		{
 
+
+			
 			if (rx_read_i32(r5apex, target_entity + m_iHealth) == 0)
 				continue;
 			if (rx_read_i32(r5apex, target_entity + m_bleedoutState) > 0) // ignore knock
 				continue;
-
-			// luiz - distancia
+			
+		
 			vec3 enmPos;
 
 			rx_read_process(r5apex, localplayer + m_vecAbsOrigin, &local_position, sizeof(vec3));
-			rx_read_process(r5apex, target_entity + 0x158, &enmPos, sizeof(vec3)); // offset distance
+			rx_read_process(r5apex, target_entity + m_vecAbsOrigin, &enmPos, sizeof(vec3)); // enemy position
+
+
+
+			//enmPos.x = 31518;
+			//enmPos.y = -6712;
+			//enmPos.z = -29235;
+
+
 			float distance = ((CalcDistance(local_position, enmPos) / 100) * 2);   // need to verify
-			// printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
+			//printf("  	distance %f", ((CalcDistance(local_position, enmPos))/100)*2);
 			bool far = (distance >= maxdistance);
 
 			if (far)
@@ -725,7 +720,7 @@ int main(void)
 			float fov = 360.0f;
 			// luiz - alteracao hitbox
 			// int bone_list[] = {2, 3, 5, 8};
-			int bone_list[] = {7, 7, 7, 7}; // chest
+			int bone_list[] = {5,5,5,5}; // chest
 
 			vec3 breath_angles;
 			rx_read_process(r5apex, localplayer + m_iViewAngles - 0x10, &breath_angles, sizeof(vec3));
@@ -829,6 +824,7 @@ int main(void)
 					data.x = (int)sx;
 					data.y = (int)sy;
 					rx_write_process(r5apex, IInputSystem + 0x1DB0, &data, sizeof(data));
+					//printf(" x %i y %i",data.x,data.y);
 					std::this_thread::sleep_for(sleep);
 				}
 			}
@@ -847,26 +843,57 @@ int main(void)
 			for (int k = 0; k < 10000; k++)
 			{
 				QWORD entity = GetClientEntity(r5apex, IClientEntityList, k);
-				itemID = rx_read_int(r5apex, entity + 0x1648);
+				itemID = rx_read_int(r5apex, entity + m_itemId);
+
+				//https://www.unknowncheats.me/forum/apex-legends/319804-apex-legends-reversal-structs-offsets-572.html
+
 				switch (itemID)
 				{
+				//weapons
 				case 27:  // VK-47 Flatline
 				case 77:  // R-301 Carbine
-				case 171: // Shield (Level 3 / Purple)
-				case 175: // Evo Shield (Level 3 / Purple)
-				case 170: // Helmet (Level 4 / Gold)
-				case 184: // Backpack (Level 3 / Purple)
-				case 185: // Backpack (Level 4 / Gold)
-				case 166: // Head Level 3 / Purple
-				case 167: // Head Level 4 / Gold
-				case 162: // shield battery
-				case 209: //light mag level 3
-				case 210: //light mag level 4
-				case 213: //heavy mag level 3
-				case 214: //heavy mag level 4
-				case 183: //backpack level 2
-				case 97: //wingman
-				case 235: //skullpiercer
+				case 47:  // r99
+				case 97:  //wingman
+
+				//shields
+				case 176: // Evo Shield 3
+				case 177: // Evo Shield 4
+				case 171: // Shield 3
+				case 172: // Shield 4
+
+				//helmets
+				case 167: // Helmet 3
+				case 168: // Helmet 4
+
+				//backpacks
+				case 184: // Backpack 2
+				case 185: // Backpack 3
+				case 186: // Backpack 4
+
+				//attachments
+				case 222: //Extended Sniper Mag 3
+				case 223: //Extended Sniper Mag 4
+				case 210: //Extended Light Mag 3
+				case 211: //Extended Light Mag 4
+				case 218: //Energy Magazine 3
+				case 219: //Energy Magazine 4
+				case 214: //Heavy Magazine 3
+				case 215: //Heavy Magazine 4
+				case 203: //Barrel Stabilizer 3
+				case 204: //Barrel Stabilizer 4
+				case 232: //Sniper Stock 3
+				case 226: //Shotgun Bolt 3
+
+				//scopes
+				case 191: //1x HCOG Classic
+				case 192: //2x HCOG Bruiser
+				case 199: //4x-8x Variable Sniper
+
+				//miscellaneous
+				case 182: //Knockdown Shield 4
+				case 163: //Shield Battery
+				case 235: //Skullpiercer
+				
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
 				}
