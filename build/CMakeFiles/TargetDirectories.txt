@@ -1,8 +1,0 @@
-/home/luiz/test/apex_linux/build/CMakeFiles/edit_cache.dir
-/home/luiz/test/apex_linux/build/CMakeFiles/rebuild_cache.dir
-/home/luiz/test/apex_linux/build/rx/CMakeFiles/rx.dir
-/home/luiz/test/apex_linux/build/rx/CMakeFiles/edit_cache.dir
-/home/luiz/test/apex_linux/build/rx/CMakeFiles/rebuild_cache.dir
-/home/luiz/test/apex_linux/build/apex_linux/CMakeFiles/apex_linux.dir
-/home/luiz/test/apex_linux/build/apex_linux/CMakeFiles/edit_cache.dir
-/home/luiz/test/apex_linux/build/apex_linux/CMakeFiles/rebuild_cache.dir

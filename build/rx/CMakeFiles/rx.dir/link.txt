@@ -1,2 +1,0 @@
-/usr/bin/ar qc librx.a CMakeFiles/rx.dir/src/rx_handle.c.o CMakeFiles/rx.dir/src/rx_input.c.o CMakeFiles/rx.dir/src/rx_list.c.o CMakeFiles/rx.dir/src/rx_module.c.o CMakeFiles/rx.dir/src/rx_process.c.o
-/usr/bin/ranlib librx.a
