@@ -20,11 +20,12 @@
 
 
 #define AIMKEY 107						// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
-#define AIMFOV 10.0f					// Screen range that aimbot will look for enemies. (10 = agressive, 7 = moderated, 3 = safe)
-#define AIMSMOOTH 8.0f					// Speed that the aim will lock on the enemies.	   (8 = agressive, 15 = moderated, 20 = safe)
+#define AIMFOV_ADS 3.0f					// ADS fov (aiming) 								(10 = agressive, 7 = moderated, 3 = safe)
+#define AIMFOV_HIPFIRE 10.0f			// Hipfire fov (not aiming)							(15 = agressive, 10 = moderated, 5 = safe)
+#define AIMSMOOTH 14.0f					// Speed that the aim will lock on the enemies.	    (8 = agressive, 15 = moderated, 20 = safe)
 #define ITEM_ESP 1						// Enable or disable ESP item
 #define AIMBOT_ENABLED 1				// Enable or disable aimbot
-std::chrono::milliseconds sleep(10); 	// aim assist sleep time in miliseconds, increasing this value will turn aimbot more `safe`
+std::chrono::milliseconds sleep(18); 	// aim assist sleep time in miliseconds, increasing this value will turn aimbot more `safe`
 float maxdistance = 50.0f;			 	// aim assist maximum range in meters
 
 
@@ -236,6 +237,7 @@ int dump_table(rx_handle game_process, QWORD table, const char *name)
 
 int main(void)
 {
+
 	int pid = GetApexProcessId();
 
 	if (pid == 0)
@@ -446,6 +448,8 @@ int main(void)
 
 	while (1)
 	{
+		float fovAds = AIMFOV_ADS;
+		float fovHipfire = AIMFOV_HIPFIRE;
 		itemWorkaround++;
 		//printf("TESTEEEE -- %i",itemWorkaround);
 		
@@ -760,9 +764,14 @@ int main(void)
 			if (rx_read_i8(r5apex, localplayer + m_bZooming))
 			{
 				fl_sensitivity = (zoom_fov / 90.0f) * fl_sensitivity;
+				fovAds = AIMFOV_ADS;
+			}else{
+				fovAds = fovHipfire;
 			}
 
-			if (fov <= AIMFOV)
+
+
+			if (fov <= fovAds)
 			{
 
 				vec3 angles;
@@ -856,12 +865,15 @@ int main(void)
 				case 97:  //wingman
 
 				//shields
+				case 175: // Evo Shield 2
 				case 176: // Evo Shield 3
 				case 177: // Evo Shield 4
+				case 170: // Shield 2
 				case 171: // Shield 3
 				case 172: // Shield 4
 
 				//helmets
+				case 166: // Helmet 2
 				case 167: // Helmet 3
 				case 168: // Helmet 4
 
@@ -887,6 +899,7 @@ int main(void)
 				//scopes
 				case 191: //1x HCOG Classic
 				case 192: //2x HCOG Bruiser
+				case 197: //6x sniper
 				case 199: //4x-8x Variable Sniper
 
 				//miscellaneous
@@ -897,6 +910,21 @@ int main(void)
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
 				}
+
+
+			if (itemID == 27 || itemID == 77 || itemID == 47 || itemID == 97)
+                {
+                    rx_write_i32(r5apex, entity + 0x3C8, 1);
+                    rx_write_i32(r5apex, entity + 0x3D0, 2);
+                    rx_write_i32(r5apex, entity + 0x2C4, 1512990053);
+                    rx_write_float(r5apex, entity + 0x1D0, 61.f);
+                    rx_write_float(r5apex, entity + 0x1D4, 2.f);
+                    rx_write_float(r5apex, entity + 0x1D8, 2.f);
+ 
+ 
+                }
+
+
 			}
 		}
 	}
