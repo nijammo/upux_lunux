@@ -1,7 +1,3 @@
-/*
- * tested on ubuntu 22.04.1 LTS and linux mint 21
- */
-
 #include "../../rx/rx.h"
 #include <stdio.h>
 #include <string.h>
@@ -19,14 +15,14 @@
 /* ------------------ START CONFIGURATIONS ------------------ */
 
 
-#define AIMKEY 107						// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
-#define AIMFOV_ADS 3.0f					// ADS fov (aiming) 								(10 = agressive, 7 = moderated, 3 = safe)
-#define AIMFOV_HIPFIRE 10.0f			// Hipfire fov (not aiming)							(15 = agressive, 10 = moderated, 5 = safe)
-#define AIMSMOOTH 14.0f					// Speed that the aim will lock on the enemies.	    (8 = agressive, 15 = moderated, 20 = safe)
-#define ITEM_ESP 1						// Enable or disable ESP item
+#define AIMKEY 111					// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
+#define AIMFOV_ADS 2.4f					// ADS fov (aiming) 								(10 = agressive, 7 = moderated, 3 = safe)
+#define AIMFOV_HIPFIRE 8.4f				// Hipfire fov (not aiming)							(15 = agressive, 10 = moderated, 5 = safe)
+#define AIMSMOOTH 18.2f					// Speed that the aim will lock on the enemies.	    (8 = agressive, 15 = moderated, 20 = safe)
+#define ITEM_ESP 1					// Enable or disable ESP item
 #define AIMBOT_ENABLED 1				// Enable or disable aimbot
-std::chrono::milliseconds sleep(18); 	// aim assist sleep time in miliseconds, increasing this value will turn aimbot more `safe`
-float maxdistance = 50.0f;			 	// aim assist maximum range in meters
+std::chrono::milliseconds sleep(15); 			// aim assist sleep time in miliseconds, increasing this value will turn aimbot more `safe`
+float maxdistance = 160.0f;			 	// aim assist maximum range in meters
 
 
 /* ------------------ END CONFIGURATIONS ------------------ */
@@ -39,30 +35,30 @@ float maxdistance = 50.0f;			 	// aim assist maximum range in meters
 
 
 
-int m_iHealth = 0x043c; 					//RecvTable.DT_Player.m_iHealth
-int m_iTeamNum = 0x044c; 					//RecvTable.DT_BaseEntity.m_iTeamNum
-int m_iViewAngles = 0x25a4 - 0x14; 			//m_ammoPoolCapacity - 0x14
-int m_iCameraAngles = 0x1c60 + 0x2EC; 		//m_zoomFullStartTime + 0x2EC
-int m_bZooming = 0x1c51; 					//m_bZooming
-int m_iBoneMatrix = 0x0e98 + 0x50 - 0x8; 	//m_nForceBone + 0x50 - 0x8
-int m_iWeapon = 0x1a14; 					//m_latestPrimaryWeapons
-int m_vecAbsOrigin = 0x014c; 				//DataMap.CBaseViewModel.m_vecAbsOrigin
-int m_playerData = 0x16b8; 					//RecvTable.DT_WeaponX.m_playerData
-int m_lifeState = 0x0798; 					//RecvTable.DT_Player.m_lifeState
-int m_itemId = 0x1648; 						//RecvTable.DT_PropSurvival.m_customScriptInt
-int m_gameMode = 0x01f16710; 				//mp_gamemode
-int m_localplayer = 0x01edd7e0 + 0x8;
-int m_sensitivity = 0x01eca0e0; 			//mouse_sensitivity
-int m_bulletSpeed = 0x1ef0; 				//CWeaponX!m_flProjectileSpeed
-int m_bulletGravity = m_bulletSpeed + 0x8; 	//CWeaponX!m_flProjectileSpeed + 0x8
-int m_muzzle = 0x1f48; 						//CPlayer!camera_origin
+int m_iHealth = 0x043c;                        	 //RecvTable.DT_Player.m_iHealth
+int m_iTeamNum = 0x044c;                         //RecvTable.DT_BaseEntity.m_iTeamNum
+int m_iViewAngles = 0x25bc - 0x14;               //m_ammoPoolCapacity - 0x14
+int m_iCameraAngles = 0x1c70 + 0x2EC;            //m_zoomFullStartTime + 0x2EC
+int m_bZooming = 0x1c61;                         //m_bZooming
+int m_iBoneMatrix = 0x0e98 + 0x50 - 0x8;         //m_nForceBone + 0x50 - 0x8
+int m_iWeapon = 0x1a24;                 	 //m_latestPrimaryWeapons
+int m_vecAbsOrigin = 0x014c;                     //DataMap.CBaseViewModel.m_vecAbsOrigin
+int m_playerData = 0x16c0;                       //RecvTable.DT_WeaponX.m_playerData
+int m_lifeState = 0x0798;                        //RecvTable.DT_Player.m_lifeState
+int m_itemId = 0x1648;                           //RecvTable.DT_PropSurvival.m_customScriptInt
+int m_gameMode = 0x02172640;                     //mp_gamemode
+int m_localplayer = 0x02139480 + 0x8;            //.?AVC_GameMovement@@ + 0x8)
+int m_sensitivity = 0x02125920;                  //mouse_sensitivity
+int m_bulletSpeed = 0x1F50;                      //CWeaponX!m_flProjectileSpeed        or        WeaponSettingsMeta.base + WeaponSettings.projectile_launch_speed
+int m_bulletGravity = m_bulletSpeed + 0x8;       //CWeaponX!m_flProjectileSpeed + 0x8
+int m_muzzle = 0x1f58;                           //CPlayer!camera_origin
+int m_iObserverMode = 0x34ec;                    //m_iObserverMode
 
 
-
-
-#define in_Attack 0x076687d8
-#define m_bleedoutState 0x2738
-
+ 
+#define in_Attack 0x074034b0                     //[Buttons] -> in_attack
+#define m_bleedoutState 0x2750
+//#define OFFSET_YAW 0x22c4                      //m_currentFramePlayer.m_ammoPoolCount
 
 
 /* ------------------ END OFFSETS OFFSETS ------------------ */
@@ -166,7 +162,6 @@ int itemID;
 int mode;
 int iTeamControl;
 int iLocControl;
-int spectatorcount = 0;
 
 QWORD GetClientEntity(rx_handle game_process, QWORD entity, QWORD index)
 {
@@ -347,7 +342,7 @@ int main(void)
 		{
 			vis_time = vis_time + 0x10;
 			dwVisibleTime = rx_read_i32(r5apex, vis_time + 0x4);
-			// dwVisibleTime = 0x1a48;
+			 dwVisibleTime = 0x1A80;	//lastVisibleTime
 		}
 	}
 
@@ -584,17 +579,17 @@ int main(void)
 			rx_write_i32(r5apex, entity + 0x2C4, 1512990053);
 			rx_write_i32(r5apex, entity + 0x3c8, 1);
 			rx_write_i32(r5apex, entity + 0x3d0, 2);
-
+			
 			if (last_visible != 0.00f)
 			{
 
 				float fov = get_fov(breath_angles, target_angle);
 
 				//set default glow color - white
-				rx_write_float(r5apex, entity + 0x1D0, 255.0f);
-				rx_write_float(r5apex, entity + 0x1D4, 255.0f);
-				rx_write_float(r5apex, entity + 0x1D8, 255.0f);
-
+				//rx_write_float(r5apex, entity + 0x1D0, 5.0f);	//Red
+				//rx_write_float(r5apex, entity + 0x1D4, 5.0f);	//Green
+				rx_write_float(r5apex, entity + 0x1D8, 100.0f);	//Blue
+				
 				if (fov < target_fov && last_visible > lastvis_aim[i]) // i think this if is not working, always false
 				{
 
@@ -605,7 +600,7 @@ int main(void)
 					// luiz
 					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); // glow distance
 
-					if (rx_read_i32(r5apex, entity + 0x0170) <= 10)
+					/*if (rx_read_i32(r5apex, entity + 0x0170) <= 10)
 					{
 						// green - VERY LOW SHIELD
 						rx_write_float(r5apex, entity + 0x1D0, 0.0f);
@@ -680,7 +675,7 @@ int main(void)
 						rx_write_float(r5apex, entity + 0x1D0, 255.0f);
 						rx_write_float(r5apex, entity + 0x1D4, 0.0f);
 						rx_write_float(r5apex, entity + 0x1D8, 0.0f);
-					}
+					}*/
 				}
 			}
 		}
@@ -859,60 +854,65 @@ int main(void)
 				switch (itemID)
 				{
 				//weapons
-				case 27:  // VK-47 Flatline
-				case 77:  // R-301 Carbine
-				case 47:  // r99
-				case 97:  //wingman
+				case 27: 	 // VK-47 Flatline
+				case 73:	 // R-301 Carbine
+				case 43: 	 // r99
+				case 98: 	 //wingman
+				case 83:	 //PK
+				//case 7:	 //L-Star
 
 				//shields
-				case 175: // Evo Shield 2
-				case 176: // Evo Shield 3
-				case 177: // Evo Shield 4
-				case 170: // Shield 2
-				case 171: // Shield 3
-				case 172: // Shield 4
+				//case 175: // Evo Shield 2
+				case 186: // Evo Shield 3
+				case 187: // Evo Shield 4
+				//case 170: // Shield 2
+				case 181: // Shield 3
+				case 182: // Shield 4
 
 				//helmets
-				case 166: // Helmet 2
-				case 167: // Helmet 3
-				case 168: // Helmet 4
+				//case 166: // Helmet 2
+				case 176: // Helmet 3
+				case 177: // Helmet 4
 
 				//backpacks
-				case 184: // Backpack 2
-				case 185: // Backpack 3
-				case 186: // Backpack 4
+				case 194: // Backpack 2
+				case 195: // Backpack 3
+				case 196: // Backpack 4
 
 				//attachments
-				case 222: //Extended Sniper Mag 3
-				case 223: //Extended Sniper Mag 4
-				case 210: //Extended Light Mag 3
-				case 211: //Extended Light Mag 4
-				case 218: //Energy Magazine 3
-				case 219: //Energy Magazine 4
-				case 214: //Heavy Magazine 3
-				case 215: //Heavy Magazine 4
-				case 203: //Barrel Stabilizer 3
-				case 204: //Barrel Stabilizer 4
-				case 232: //Sniper Stock 3
-				case 226: //Shotgun Bolt 3
+				//case 222: //Extended Sniper Mag 3
+				//case 223: //Extended Sniper Mag 4
+				case 220: //Extended Light Mag 3
+				case 221: //Extended Light Mag 4
+				case 228: //Energy Magazine 3
+				case 229: //Energy Magazine 4
+				case 224: //Heavy Magazine 3
+				case 225: //Heavy Magazine 4
+				//case 203: //Barrel Stabilizer 3
+				//case 204: //Barrel Stabilizer 4
+				//case 232: //Sniper Stock 3
+				case 236: //Shotgun Bolt 3
+				case 237: //Shotgun Bolt 4
 
 				//scopes
-				case 191: //1x HCOG Classic
-				case 192: //2x HCOG Bruiser
-				case 197: //6x sniper
-				case 199: //4x-8x Variable Sniper
+				case 201: //1x HCOG Classic
+				case 202: //2x HCOG Bruiser
+				//case 197: //6x sniper
+				//case 199: //4x-8x Variable Sniper
 
 				//miscellaneous
-				case 182: //Knockdown Shield 4
-				case 163: //Shield Battery
-				case 235: //Skullpiercer
+				case 192: //Knockdown Shield 4
+				case 172: //Shield Battery
+				case 173: //Shile Cell
+				case 246: //Skullpiercer
+				case 248: //Hammerpoint
 				
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
 				}
 
 
-			if (itemID == 27 || itemID == 77 || itemID == 47 || itemID == 97)
+			if (itemID == 27 || itemID == 73 || itemID == 43 || itemID == 83 || itemID == 98) 
                 {
                     rx_write_i32(r5apex, entity + 0x3C8, 1);
                     rx_write_i32(r5apex, entity + 0x3D0, 2);
