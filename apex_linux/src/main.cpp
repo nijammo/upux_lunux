@@ -854,58 +854,59 @@ int main(void)
 				switch (itemID)
 				{
 				//weapons
-				case 27: 	 // VK-47 Flatline
-				case 73:	 // R-301 Carbine
-				case 43: 	 // r99
-				case 98: 	 //wingman
-				case 83:	 //PK
+				case 23: 	 // VK-47 Flatline
+				case 69:	 // R-301 Carbine
+				case 49: 	 // r99
+				case 90: 	 //wingman
+				case 89:	 //PK
 				//case 7:	 //L-Star
 
 				//shields
 				//case 175: // Evo Shield 2
-				case 186: // Evo Shield 3
-				case 187: // Evo Shield 4
+				case 182: // Evo Shield 3
+				case 183: // Evo Shield 4
 				//case 170: // Shield 2
-				case 181: // Shield 3
-				case 182: // Shield 4
+				case 178: // Shield 3
+				case 179: // Shield 4
 
 				//helmets
 				//case 166: // Helmet 2
-				case 176: // Helmet 3
-				case 177: // Helmet 4
+				case 172: // Helmet 3
+				case 173: // Helmet 4
 
 				//backpacks
-				case 194: // Backpack 2
-				case 195: // Backpack 3
-				case 196: // Backpack 4
+				case 190: // Backpack 2
+				case 191: // Backpack 3
+				case 192: // Backpack 4
 
 				//attachments
 				//case 222: //Extended Sniper Mag 3
 				//case 223: //Extended Sniper Mag 4
-				case 220: //Extended Light Mag 3
-				case 221: //Extended Light Mag 4
-				case 228: //Energy Magazine 3
-				case 229: //Energy Magazine 4
-				case 224: //Heavy Magazine 3
-				case 225: //Heavy Magazine 4
+				case 216: //Extended Light Mag 3
+				case 217: //Extended Light Mag 4
+				case 224: //Energy Magazine 3
+				case 225: //Energy Magazine 4
+				case 220: //Heavy Magazine 3
+				case 221: //Heavy Magazine 4
 				//case 203: //Barrel Stabilizer 3
 				//case 204: //Barrel Stabilizer 4
 				//case 232: //Sniper Stock 3
-				case 236: //Shotgun Bolt 3
-				case 237: //Shotgun Bolt 4
+				case 232: //Shotgun Bolt 3
+				case 233: //Shotgun Bolt 4
 
 				//scopes
-				case 201: //1x HCOG Classic
-				case 202: //2x HCOG Bruiser
+				case 197: //1x HCOG Classic
+				case 198: //2x HCOG Bruiser
 				//case 197: //6x sniper
 				//case 199: //4x-8x Variable Sniper
 
 				//miscellaneous
-				case 192: //Knockdown Shield 4
-				case 172: //Shield Battery
-				case 173: //Shile Cell
-				case 246: //Skullpiercer
-				case 248: //Hammerpoint
+				case 188: //Knockdown Shield 4
+				case 168: //Shield Battery
+				case 169: //Shile Cell
+				case 242: //Skullpiercer
+				case 244: //Hammerpoint
+				case 258: //Treasure Box
 				
 					rx_write_i32(r5apex, entity + 0x02c0, 1363184265);
 					break;
