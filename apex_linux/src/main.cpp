@@ -35,30 +35,30 @@ float maxdistance = 160.0f;			 	// aim assist maximum range in meters
 
 
 
-int m_iHealth = 0x043c;                        	 //RecvTable.DT_Player.m_iHealth
-int m_iTeamNum = 0x044c;                         //RecvTable.DT_BaseEntity.m_iTeamNum
-int m_iViewAngles = 0x25bc - 0x14;               //m_ammoPoolCapacity - 0x14
-int m_iCameraAngles = 0x1c70 + 0x2EC;            //m_zoomFullStartTime + 0x2EC
-int m_bZooming = 0x1c61;                         //m_bZooming
-int m_iBoneMatrix = 0x0e98 + 0x50 - 0x8;         //m_nForceBone + 0x50 - 0x8
-int m_iWeapon = 0x1a24;                 	 //m_latestPrimaryWeapons
-int m_vecAbsOrigin = 0x014c;                     //DataMap.CBaseViewModel.m_vecAbsOrigin
-int m_playerData = 0x16c0;                       //RecvTable.DT_WeaponX.m_playerData
-int m_lifeState = 0x0798;                        //RecvTable.DT_Player.m_lifeState
-int m_itemId = 0x1648;                           //RecvTable.DT_PropSurvival.m_customScriptInt
-int m_gameMode = 0x02172640;                     //mp_gamemode
-int m_localplayer = 0x02139480 + 0x8;            //.?AVC_GameMovement@@ + 0x8)
-int m_sensitivity = 0x02125920;                  //mouse_sensitivity
-int m_bulletSpeed = 0x1F50;                      //CWeaponX!m_flProjectileSpeed        or        WeaponSettingsMeta.base + WeaponSettings.projectile_launch_speed
+int m_iHealth = 0x0470;                        	 //RecvTable.DT_Player.m_iHealth
+int m_iTeamNum = 0x0480;                         //RecvTable.DT_BaseEntity.m_iTeamNum
+int m_iViewAngles = 0x25e4 - 0x14;               //m_ammoPoolCapacity - 0x14
+int m_iCameraAngles = 0x1c90 + 0x2EC;            //m_zoomFullStartTime + 0x2EC
+int m_bZooming = 0x1c81;                         //m_bZooming
+int m_iBoneMatrix = 0x0ec8 + 0x50 - 0x8;         //m_nForceBone + 0x50 - 0x8
+int m_iWeapon = 0x1a44;                 	 //m_latestPrimaryWeapons
+int m_vecAbsOrigin = 0x017c;                     //DataMap.CBaseViewModel.m_vecAbsOrigin
+int m_playerData = 0x16e0;                       //RecvTable.DT_WeaponX.m_playerData
+int m_lifeState = 0x07d0;                        //RecvTable.DT_Player.m_lifeState
+int m_itemId = 0x1668;                           //RecvTable.DT_PropSurvival.m_customScriptInt
+int m_gameMode = 0x0225d440;                     //mp_gamemode
+int m_localplayer = 0x22245c0 + 0x8;            //.?AVC_GameMovement@@ + 0x8)
+int m_sensitivity = 0x022106f0;                  //mouse_sensitivity
+int m_bulletSpeed = 0x1f6c;                      //CWeaponX!m_flProjectileSpeed        or        WeaponSettingsMeta.base + WeaponSettings.projectile_launch_speed
 int m_bulletGravity = m_bulletSpeed + 0x8;       //CWeaponX!m_flProjectileSpeed + 0x8
-int m_muzzle = 0x1f58;                           //CPlayer!camera_origin
-int m_iObserverMode = 0x34ec;                    //m_iObserverMode
+int m_muzzle = 0x1f80;                           //CPlayer!camera_origin
+int m_iObserverMode = 0x3534;                    //m_iObserverMode
 
 
  
-#define in_Attack 0x074034b0                     //[Buttons] -> in_attack
-#define m_bleedoutState 0x2750
-//#define OFFSET_YAW 0x22c4                      //m_currentFramePlayer.m_ammoPoolCount
+#define in_Attack 0x07472f98                     //[Buttons] -> in_attack
+#define m_bleedoutState 0x2790
+//#define OFFSET_YAW 0x22ec                      //m_currentFramePlayer.m_ammoPoolCount
 
 
 /* ------------------ END OFFSETS OFFSETS ------------------ */
@@ -342,7 +342,7 @@ int main(void)
 		{
 			vis_time = vis_time + 0x10;
 			dwVisibleTime = rx_read_i32(r5apex, vis_time + 0x4);
-			 dwVisibleTime = 0x1A80;	//lastVisibleTime
+			 dwVisibleTime = 0x1AA0;	//lastVisibleTime
 		}
 	}
 
