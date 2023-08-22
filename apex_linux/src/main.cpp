@@ -576,9 +576,9 @@ int main(void)
 
 			float last_visible = rx_read_float(r5apex, entity + dwVisibleTime);
 			// glow enable
-			rx_write_i32(r5apex, entity + 0x2C4, 1512990053);
-			rx_write_i32(r5apex, entity + 0x3c8, 1);
-			rx_write_i32(r5apex, entity + 0x3d0, 2);
+			rx_write_i32(r5apex, entity + 0x2C4 + 0x30, 1512990053);
+			rx_write_i32(r5apex, entity + 0x3c8 + 0x30, 1);
+			rx_write_i32(r5apex, entity + 0x3d0 + 0x30, 2);
 			
 			if (last_visible != 0.00f)
 			{
@@ -588,7 +588,7 @@ int main(void)
 				//set default glow color - white
 				//rx_write_float(r5apex, entity + 0x1D0, 5.0f);	//Red
 				//rx_write_float(r5apex, entity + 0x1D4, 5.0f);	//Green
-				rx_write_float(r5apex, entity + 0x1D8, 100.0f);	//Blue
+				rx_write_float(r5apex, entity + 0x1D8 + 0x30, 100.0f);	//Blue
 				
 				if (fov < target_fov && last_visible > lastvis_aim[i]) // i think this if is not working, always false
 				{
@@ -598,7 +598,7 @@ int main(void)
 					lastvis_aim[i] = last_visible;
 
 					// luiz
-					rx_write_float(r5apex, entity + 0x3B4, 99999999.0f); // glow distance
+					rx_write_float(r5apex, entity + 0x3B4 + 0x30, 99999999.0f); // glow distance
 
 					/*if (rx_read_i32(r5apex, entity + 0x0170) <= 10)
 					{
@@ -915,12 +915,12 @@ int main(void)
 
 			if (itemID == 27 || itemID == 73 || itemID == 43 || itemID == 83 || itemID == 98) 
                 {
-                    rx_write_i32(r5apex, entity + 0x3C8, 1);
-                    rx_write_i32(r5apex, entity + 0x3D0, 2);
-                    rx_write_i32(r5apex, entity + 0x2C4, 1512990053);
-                    rx_write_float(r5apex, entity + 0x1D0, 61.f);
-                    rx_write_float(r5apex, entity + 0x1D4, 2.f);
-                    rx_write_float(r5apex, entity + 0x1D8, 2.f);
+                    rx_write_i32(r5apex, entity + 0x3C8 + 0x30, 1);
+                    rx_write_i32(r5apex, entity + 0x3D0 + 0x30, 2);
+                    rx_write_i32(r5apex, entity + 0x2C4 + 0x30, 1512990053);
+                    rx_write_float(r5apex, entity + 0x1D0 + 0x30, 61.f);
+                    rx_write_float(r5apex, entity + 0x1D4 + 0x30, 2.f);
+                    rx_write_float(r5apex, entity + 0x1D8 + 0x30, 2.f);
  
  
                 }
