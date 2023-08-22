@@ -53,6 +53,7 @@ int m_bulletSpeed = 0x1f6c;                      //CWeaponX!m_flProjectileSpeed 
 int m_bulletGravity = m_bulletSpeed + 0x8;       //CWeaponX!m_flProjectileSpeed + 0x8
 int m_muzzle = 0x1f80;                           //CPlayer!camera_origin
 int m_iObserverMode = 0x3534;                    //m_iObserverMode
+int m_dwVisibleTime = 0x1AA0;                     //CPlayer!lastVisibleTime
 
 
  
@@ -342,7 +343,7 @@ int main(void)
 		{
 			vis_time = vis_time + 0x10;
 			dwVisibleTime = rx_read_i32(r5apex, vis_time + 0x4);
-			 dwVisibleTime = 0x1AA0;	//lastVisibleTime
+			 dwVisibleTime = m_dwVisibleTime;	//lastVisibleTime
 		}
 	}
 
