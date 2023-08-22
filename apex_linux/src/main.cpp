@@ -15,10 +15,10 @@
 /* ------------------ START CONFIGURATIONS ------------------ */
 
 
-#define AIMKEY 111					// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
+#define AIMKEY 108					// keys: 107 = mouse1, 108 = mouse2, 109 = mouse3, 110 = mouse4, 111 = mouse5, 80 = LAlt
 #define AIMFOV_ADS 2.4f					// ADS fov (aiming) 								(10 = agressive, 7 = moderated, 3 = safe)
 #define AIMFOV_HIPFIRE 8.4f				// Hipfire fov (not aiming)							(15 = agressive, 10 = moderated, 5 = safe)
-#define AIMSMOOTH 18.2f					// Speed that the aim will lock on the enemies.	    (8 = agressive, 15 = moderated, 20 = safe)
+#define AIMSMOOTH 2.2f					// Speed that the aim will lock on the enemies.	    (8 = agressive, 15 = moderated, 20 = safe)
 #define ITEM_ESP 1					// Enable or disable ESP item
 #define AIMBOT_ENABLED 1				// Enable or disable aimbot
 std::chrono::milliseconds sleep(15); 			// aim assist sleep time in miliseconds, increasing this value will turn aimbot more `safe`
